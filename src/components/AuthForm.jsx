@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser, registerUser, toggleMode } from "../redux/authSlice";
 
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AuthForm = () => {
   const dispatch = useDispatch();
@@ -19,7 +19,7 @@ const AuthForm = () => {
     e.preventDefault();
 
     if (!isLogin && password !== confirmPassword) {
-        toast.error("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
 

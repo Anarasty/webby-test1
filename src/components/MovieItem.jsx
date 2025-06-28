@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { deleteMovie } from "../redux/moviesSlice";
+import { deleteMovie } from "../redux/movieThunk"; // 🟢 FIXED
 
 const MovieItem = ({ movie, onView }) => {
   const dispatch = useDispatch();
@@ -21,4 +21,3 @@ const MovieItem = ({ movie, onView }) => {
 };
 
 export default MovieItem;
-

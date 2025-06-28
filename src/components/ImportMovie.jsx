@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { addMovie } from '../redux/moviesSlice';
+import { addMovie } from '../redux/movieThunk'; // 🟢 FIXED
 import { toast } from 'react-toastify';
 
 const ImportMovies = () => {
@@ -15,7 +15,7 @@ const ImportMovies = () => {
     reader.onload = async (e) => {
       const content = e.target.result;
       const movies = [];
-      const blocks = content.split(/\n\s*\n/); // разбиваем по пустой строке
+      const blocks = content.split(/\n\s*\n/);
 
       blocks.forEach((block) => {
         const lines = block.trim().split('\n');
@@ -47,7 +47,6 @@ const ImportMovies = () => {
         }
       });
 
-      // ✅ Сохраняем каждый фильм на бэк
       try {
         for (const movie of movies) {
           await dispatch(addMovie(movie)).unwrap();

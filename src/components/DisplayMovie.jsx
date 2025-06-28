@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-// import { fetchMovies, fetchMovieById } from "../redux/moviesSlice";
 import MovieItem from "./MovieItem";
 import AddMovie from "./AddMovie";
-import MovieDetailsModal from "./MovieDetailsModal";
-import SearchBar from "./SearchBar";
+import SearchBar from "./UI/SearchBar";
+import Modal from "./UI/Modal";
+
 import {
   fetchMovies,
   fetchMovieById,
-  clearSelectedMovie,
-} from "../redux/moviesSlice";
+} from "../redux/movieThunk"; // 🟢 FIXED
+import { clearSelectedMovie } from "../redux/moviesSlice"; // 🟢 OK
 
 const DisplayMovie = () => {
   const dispatch = useDispatch();
@@ -49,9 +49,8 @@ const DisplayMovie = () => {
       {isLoading && <p>Loading...</p>}
       {error && <p className="error">{error}</p>}
 
-      {!isLoading &&
-        !error &&
-        (filteredMovies.length > 0 ? (
+      {!isLoading && !error && (
+        filteredMovies.length > 0 ? (
           <table className="movie-table">
             <thead>
               <tr>
@@ -75,33 +74,23 @@ const DisplayMovie = () => {
           </table>
         ) : (
           <p>No movies found</p>
-        ))}
-
-      {showAddModal && (
-        <div className="modal-backdrop" onClick={() => setShowAddModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button
-              className="close-btn"
-              onClick={() => setShowAddModal(false)}
-            >
-              ✖
-            </button>
-            <AddMovie closeModal={() => setShowAddModal(false)} />
-          </div>
-        </div>
+        )
       )}
 
-      {/* {selectedMovie && (
-        <MovieDetailsModal
-          movie={selectedMovie}
-          onClose={() => dispatch({ type: "movies/clearSelectedMovie" })}
-        />
-      )} */}
+      {showAddModal && (
+        <Modal onClose={() => setShowAddModal(false)}>
+          <AddMovie closeModal={() => setShowAddModal(false)} />
+        </Modal>
+      )}
+
       {selectedMovie && (
-        <MovieDetailsModal
-          movie={selectedMovie}
-          onClose={() => dispatch(clearSelectedMovie())}
-        />
+        <Modal onClose={() => dispatch(clearSelectedMovie())}>
+          <h2>{selectedMovie.title}</h2>
+          <p><strong>ID:</strong> {selectedMovie.id}</p>
+          <p><strong>Year:</strong> {selectedMovie.year}</p>
+          <p><strong>Format:</strong> {selectedMovie.format}</p>
+          <p><strong>Actors:</strong> {selectedMovie.actors?.join(", ") || "—"}</p>
+        </Modal>
       )}
     </div>
   );
