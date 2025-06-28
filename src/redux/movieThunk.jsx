@@ -1,4 +1,3 @@
-// moviesThunks.js
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 export const fetchMovies = createAsyncThunk(
@@ -30,7 +29,7 @@ export const addMovie = createAsyncThunk(
     });
     if (!res.ok) throw new Error("Failed to add movie");
     const data = await res.json();
-    console.log("🔥 Added movie response:", data);
+    console.log("Added movie response:", data);
     return data;
   }
 );
