@@ -62,7 +62,7 @@ function App() {
   return (
     <div style={{ padding: 20 }}>
       {token && <Navbar />}
-      <h1>Movie Storage</h1>
+      <h1 className="header__main">Movie Storage</h1>
       {!token ? (
         <AuthForm />
       ) : (

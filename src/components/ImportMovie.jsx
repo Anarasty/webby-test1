@@ -1,20 +1,23 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { importMovies } from '../redux/moviesSlice';
+import { addMovie } from '../redux/moviesSlice';
+import { toast } from 'react-toastify';
 
 const ImportMovies = () => {
   const dispatch = useDispatch();
 
-  const handleFile = (e) => {
+  const handleFile = async (e) => {
     const file = e.target.files[0];
+    if (!file) return;
+
     const reader = new FileReader();
 
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       const content = e.target.result;
       const movies = [];
       const blocks = content.split(/\n\s*\n/); // разбиваем по пустой строке
 
-      blocks.forEach(block => {
+      blocks.forEach((block) => {
         const lines = block.trim().split('\n');
 
         let title = '';
@@ -22,7 +25,7 @@ const ImportMovies = () => {
         let format = '';
         let stars = [];
 
-        lines.forEach(line => {
+        lines.forEach((line) => {
           if (line.startsWith('Title:')) {
             title = line.replace('Title:', '').trim();
           } else if (line.startsWith('Release Year:')) {
@@ -30,21 +33,29 @@ const ImportMovies = () => {
           } else if (line.startsWith('Format:')) {
             format = line.replace('Format:', '').trim();
           } else if (line.startsWith('Stars:')) {
-            stars = line.replace('Stars:', '').split(',').map(s => s.trim());
+            stars = line.replace('Stars:', '').split(',').map((s) => s.trim());
           }
         });
 
         if (title) {
           movies.push({
             title,
-            year,
+            year: parseInt(year),
             format,
-            actors: stars
+            actors: stars,
           });
         }
       });
 
-      dispatch(importMovies(movies));
+      // ✅ Сохраняем каждый фильм на бэк
+      try {
+        for (const movie of movies) {
+          await dispatch(addMovie(movie)).unwrap();
+        }
+        toast.success('Фильмы успешно импортированы');
+      } catch (err) {
+        toast.error(`Ошибка при импорте: ${err.message}`);
+      }
     };
 
     reader.readAsText(file);

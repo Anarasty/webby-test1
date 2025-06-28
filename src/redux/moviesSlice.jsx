@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-// Загрузка всех фильмов
+// Загрузка всех фильмов (список, без нормальных актёров)
 export const fetchMovies = createAsyncThunk(
   "movies/fetchMovies",
   async (_, thunkAPI) => {
@@ -32,7 +32,7 @@ export const addMovie = createAsyncThunk(
     if (!res.ok) throw new Error("Failed to add movie");
     const data = await res.json();
     console.log('🔥 Added movie response:', data);
-    return data; // вернётся новый фильм
+    return data;
   }
 );
 
@@ -52,79 +52,97 @@ export const deleteMovie = createAsyncThunk(
   }
 );
 
+// ✅ Новый — получить один фильм с актёрами
+export const fetchMovieById = createAsyncThunk(
+  "movies/fetchMovieById",
+  async (id, thunkAPI) => {
+    const token = thunkAPI.getState().auth.token;
+    const res = await fetch(`http://localhost:8000/api/v1/movies/${id}`, {
+      headers: {
+        Authorization: token,
+      },
+    });
+    if (!res.ok) throw new Error("Failed to fetch movie details");
+    const data = await res.json();
+    return data.data;
+  }
+);
+
 const moviesSlice = createSlice({
   name: "movies",
   initialState: {
     items: [],
     isLoading: false,
     error: null,
+    selectedMovie: null,
   },
-//   reducers: {},
-reducers: {
+  reducers: {
     importMovies: (state, action) => {
       state.items.push(...action.payload);
     },
+    clearSelectedMovie: (state) => {
+        state.selectedMovie = null;
+      },
   },
   extraReducers: (builder) => {
     builder
-      // FETCH
       .addCase(fetchMovies.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
       .addCase(fetchMovies.fulfilled, (state, action) => {
         state.isLoading = false;
-      
-        state.items = action.payload.map(movie => ({
-          ...movie,
+        state.items = action.payload.map((movie) => ({
+          id: movie.id,
+          title: movie.title,
+          year: movie.year,
+          format: movie.format,
           actors: Array.isArray(movie.actors)
-            ? movie.actors.map(actor => actor.name)
+            ? movie.actors.map((actor) => actor.name)
             : [],
         }));
-      
-        console.log('✅ После нормализации fetchMovies:', state.items);
       })
       .addCase(fetchMovies.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message;
       })
-
-      // ADD
       .addCase(addMovie.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
-    //   .addCase(addMovie.fulfilled, (state, action) => {
-    //     state.isLoading = false;
-    //     state.items.push(action.payload); // 🟢 Вот он!
-    //   })
-
-    .addCase(addMovie.fulfilled, (state, action) => {
+      .addCase(addMovie.fulfilled, (state, action) => {
         state.isLoading = false;
-      
         const movie = action.payload.data;
-      
         state.items.push({
           id: movie.id,
           title: movie.title,
           year: movie.year,
           format: movie.format,
-          actors: movie.actors?.map(actor => actor.name) || [], // если actors — массив с name
+          actors: Array.isArray(movie.actors)
+            ? movie.actors.map((actor) => actor.name)
+            : [],
         });
       })
-
       .addCase(addMovie.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message;
       })
-
-      // DELETE
       .addCase(deleteMovie.fulfilled, (state, action) => {
         state.items = state.items.filter((m) => m.id !== action.payload);
+      })
+      .addCase(fetchMovieById.fulfilled, (state, action) => {
+        const m = action.payload;
+        state.selectedMovie = {
+          id: m.id,
+          title: m.title,
+          year: m.year,
+          format: m.format,
+          actors: Array.isArray(m.actors) ? m.actors.map((a) => a.name) : [],
+        };
       });
   },
 });
 
-export const { importMovies } = moviesSlice.actions;
+export const { importMovies, clearSelectedMovie } = moviesSlice.actions;
 
 export default moviesSlice.reducer;

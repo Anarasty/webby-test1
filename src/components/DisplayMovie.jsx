@@ -1,49 +1,108 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchMovies } from "../redux/moviesSlice";
+// import { fetchMovies, fetchMovieById } from "../redux/moviesSlice";
 import MovieItem from "./MovieItem";
 import AddMovie from "./AddMovie";
+import MovieDetailsModal from "./MovieDetailsModal";
+import SearchBar from "./SearchBar";
+import {
+  fetchMovies,
+  fetchMovieById,
+  clearSelectedMovie,
+} from "../redux/moviesSlice";
 
 const DisplayMovie = () => {
   const dispatch = useDispatch();
-  const moviesState = useSelector((state) => state.movies) || {};
-  const movies = moviesState.items || [];
-  const isLoading = moviesState.isLoading;
-  const error = moviesState.error;
+  const {
+    items: movies,
+    isLoading,
+    error,
+    selectedMovie,
+  } = useSelector((state) => state.movies);
 
-  const [showModal, setShowModal] = React.useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     dispatch(fetchMovies());
   }, [dispatch]);
 
+  const filteredMovies = movies.filter((movie) => {
+    const query = searchQuery.toLowerCase();
+    return (
+      movie.title.toLowerCase().includes(query) ||
+      movie.actors?.some((actor) => actor.toLowerCase().includes(query))
+    );
+  });
+
   return (
-    <div>
+    <div className="movie-list-container">
       <h2>Movies</h2>
-      <button onClick={() => setShowModal(true)}>Add Movie</button>
+
+      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <SearchBar value={searchQuery} onChange={setSearchQuery} />
+        <button onClick={() => setShowAddModal(true)} className="add-btn">
+          Add Movie
+        </button>
+      </div>
 
       {isLoading && <p>Loading...</p>}
-      {error && <p>{error}</p>}
+      {error && <p className="error">{error}</p>}
 
-      {!isLoading && !error && (
-        movies.length > 0
-          ? movies.map((m) => <MovieItem key={m.id || `${m.title}-${m.year}`} movie={m} />)
-          : <p>No movies</p>
+      {!isLoading &&
+        !error &&
+        (filteredMovies.length > 0 ? (
+          <table className="movie-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Year</th>
+                <th>Format</th>
+                <th>Actors</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredMovies.map((m) => (
+                <MovieItem
+                  key={m.id || `${m.title}-${m.year}`}
+                  movie={m}
+                  onView={(movie) => dispatch(fetchMovieById(movie.id))}
+                />
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p>No movies found</p>
+        ))}
+
+      {showAddModal && (
+        <div className="modal-backdrop" onClick={() => setShowAddModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="close-btn"
+              onClick={() => setShowAddModal(false)}
+            >
+              ✖
+            </button>
+            <AddMovie closeModal={() => setShowAddModal(false)} />
+          </div>
+        </div>
       )}
 
-      {/* {showModal && (
-        <AddMovie closeModal={() => setShowModal(false)} />
+      {/* {selectedMovie && (
+        <MovieDetailsModal
+          movie={selectedMovie}
+          onClose={() => dispatch({ type: "movies/clearSelectedMovie" })}
+        />
       )} */}
-      {showModal && (
-  <div className="modal-backdrop" onClick={() => setShowModal(false)}>
-    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-      <button className="close-btn" onClick={() => setShowModal(false)}>
-        ✖
-      </button>
-      <AddMovie closeModal={() => setShowModal(false)} />
-    </div>
-  </div>
-)}
+      {selectedMovie && (
+        <MovieDetailsModal
+          movie={selectedMovie}
+          onClose={() => dispatch(clearSelectedMovie())}
+        />
+      )}
     </div>
   );
 };
