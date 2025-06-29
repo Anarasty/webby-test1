@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import {MOVIES_API_SORTED, MOVIES_API} from '../api_const'
+import {MOVIES_API_SORTED, MOVIES_API, IMPORT_API} from '../api_const'
 
 // const MOVIES_API_URL = process.env.REACT_APP_MOVIES_API;
 
@@ -74,3 +74,30 @@ export const fetchMovieById = createAsyncThunk(
     return data.data;
   }
 );
+
+export const importMovies = createAsyncThunk(
+    "movies/importMovies",
+    async (file, thunkAPI) => {
+      const token = thunkAPI.getState().auth.token;
+      const formData = new FormData();
+      formData.append("movies", file, file.name); // 👈 ИСПРАВЬ КЛЮЧ
+  
+      const res = await fetch(`${IMPORT_API}`, {
+        method: "POST",
+        headers: {
+          Authorization: token,
+        },
+        body: formData,
+      });
+  
+      const result = await res.json();
+  
+      if (!res.ok || result.status === 0) {
+        throw new Error(result?.error?.message || "Import failed");
+      }
+  
+      await thunkAPI.dispatch(fetchMovies());
+  
+      return result;
+    }
+  );
