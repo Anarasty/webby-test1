@@ -27,7 +27,8 @@ const AuthForm = () => {
   };
 
   useEffect(() => {
-    if (error) toast.error(error);
+    // if (error) toast.error(error);
+    if (error) toast.error('No such User')
   }, [error]);
 
   return (

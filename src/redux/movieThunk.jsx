@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import {MOVIES_API_SORTED, MOVIES_API} from '../api_const'
 
-const MOVIES_API_URL = process.env.REACT_APP_MOVIES_API;
+// const MOVIES_API_URL = process.env.REACT_APP_MOVIES_API;
 
 export const fetchMovies = createAsyncThunk(
   "movies/fetchMovies",
@@ -9,7 +10,7 @@ export const fetchMovies = createAsyncThunk(
     // const res = await fetch("http://localhost:8000/api/v1/movies?limit=500", {
     // console.log("MOVIES_API_URL:", MOVIES_API_URL);
     const res = await fetch(
-      `${MOVIES_API_URL}?sort=title&order=ASC&limit=40`,
+      `${MOVIES_API_SORTED}`,
       {
         headers: {
           Authorization: token,
@@ -26,7 +27,7 @@ export const addMovie = createAsyncThunk(
   "movies/addMovie",
   async (movieData, thunkAPI) => {
     const token = thunkAPI.getState().auth.token;
-    const res = await fetch(`${MOVIES_API_URL}`, {
+    const res = await fetch(`${MOVIES_API}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -48,7 +49,7 @@ export const deleteMovie = createAsyncThunk(
   "movies/deleteMovie",
   async (movieId, thunkAPI) => {
     const token = thunkAPI.getState().auth.token;
-    const res = await fetch(`${MOVIES_API_URL}/${movieId}`, {
+    const res = await fetch(`${MOVIES_API}/${movieId}`, {
       method: "DELETE",
       headers: {
         Authorization: token,
@@ -63,7 +64,7 @@ export const fetchMovieById = createAsyncThunk(
   "movies/fetchMovieById",
   async (id, thunkAPI) => {
     const token = thunkAPI.getState().auth.token;
-    const res = await fetch(`${MOVIES_API_URL}/${id}`, {
+    const res = await fetch(`${MOVIES_API}/${id}`, {
       headers: {
         Authorization: token,
       },

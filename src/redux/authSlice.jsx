@@ -1,13 +1,14 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { USERS_API, SESSIONS_API } from "../api_const";
 
-const USERS_API_URL = process.env.REACT_APP_USERS_API;
-const SESSIONS_API_URL = process.env.REACT_APP_SESSIONS_API;
+// const USERS_API_URL = process.env.REACT_APP_USERS_API;
+// const SESSIONS_API_URL = process.env.REACT_APP_SESSIONS_API;
 
 export const registerUser = createAsyncThunk(
   "auth/register",
   async (data, thunkAPI) => {
     try {
-      const res = await fetch(USERS_API_URL, {
+      const res = await fetch(USERS_API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -32,7 +33,7 @@ export const loginUser = createAsyncThunk(
   "auth/login",
   async (data, thunkAPI) => {
     try {
-      const res = await fetch(SESSIONS_API_URL, {
+      const res = await fetch(SESSIONS_API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

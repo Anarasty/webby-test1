@@ -74,6 +74,7 @@ const ImportMovies = () => {
         className="form-control form-control-sm"
         accept=".txt"
         onChange={handleFile}
+        placeholder="test1"
       />
     </div>
   );
