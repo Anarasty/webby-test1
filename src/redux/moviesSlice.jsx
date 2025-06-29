@@ -35,9 +35,6 @@ const moviesSlice = createSlice({
           title: movie.title,
           year: movie.year,
           format: movie.format,
-          actors: Array.isArray(movie.actors)
-            ? movie.actors.map((actor) => actor.name)
-            : [],
         }));
       })
       .addCase(fetchMovies.rejected, (state, action) => {
@@ -48,18 +45,8 @@ const moviesSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(addMovie.fulfilled, (state, action) => {
+      .addCase(addMovie.fulfilled, (state) => {
         state.isLoading = false;
-        const movie = action.payload.data;
-        state.items.push({
-          id: movie.id,
-          title: movie.title,
-          year: movie.year,
-          format: movie.format,
-          actors: Array.isArray(movie.actors)
-            ? movie.actors.map((actor) => actor.name)
-            : [],
-        });
       })
       .addCase(addMovie.rejected, (state, action) => {
         state.isLoading = false;
@@ -85,5 +72,4 @@ export const { importMovies, clearSelectedMovie } = moviesSlice.actions;
 
 export default moviesSlice.reducer;
 
-// ✅ ВАЖНО: экспортируй THUNKS через index.js или прямо тут:
 export { fetchMovies, addMovie, deleteMovie, fetchMovieById };

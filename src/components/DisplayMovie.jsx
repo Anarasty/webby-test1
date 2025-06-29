@@ -1,121 +1,22 @@
-// import React, { useEffect, useState } from "react";
-// import { useSelector, useDispatch } from "react-redux";
-// import MovieItem from "./MovieItem";
-// import AddMovie from "./AddMovie";
-// import SearchBar from "./UI/SearchBar";
-// import Modal from "./UI/Modal";
-
-// import {
-//   fetchMovies,
-//   fetchMovieById,
-// } from "../redux/movieThunk"; // 🟢 FIXED
-// import { clearSelectedMovie } from "../redux/moviesSlice"; // 🟢 OK
-
-// const DisplayMovie = () => {
-//   const dispatch = useDispatch();
-//   const {
-//     items: movies,
-//     isLoading,
-//     error,
-//     selectedMovie,
-//   } = useSelector((state) => state.movies);
-
-//   const [showAddModal, setShowAddModal] = useState(false);
-//   const [searchQuery, setSearchQuery] = useState("");
-
-//   useEffect(() => {
-//     dispatch(fetchMovies());
-//   }, [dispatch]);
-
-//   const filteredMovies = movies.filter((movie) => {
-//     const query = searchQuery.toLowerCase();
-//     return (
-//       movie.title.toLowerCase().includes(query) ||
-//       movie.actors?.some((actor) => actor.toLowerCase().includes(query))
-//     );
-//   });
-
-//   return (
-//     <div className="movie-list-container">
-//       <h2>Movies</h2>
-
-//       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-//         <SearchBar value={searchQuery} onChange={setSearchQuery} />
-//         <button onClick={() => setShowAddModal(true)} className="add-btn">
-//           Add Movie
-//         </button>
-//       </div>
-
-//       {isLoading && <p>Loading...</p>}
-//       {error && <p className="error">{error}</p>}
-
-//       {!isLoading && !error && (
-//         filteredMovies.length > 0 ? (
-//           <table className="movie-table">
-//             <thead>
-//               <tr>
-//                 <th>ID</th>
-//                 <th>Title</th>
-//                 <th>Year</th>
-//                 <th>Format</th>
-//                 <th>Actors</th>
-//                 <th>Actions</th>
-//               </tr>
-//             </thead>
-//             <tbody>
-//               {filteredMovies.map((m) => (
-//                 <MovieItem
-//                   key={m.id || `${m.title}-${m.year}`}
-//                   movie={m}
-//                   onView={(movie) => dispatch(fetchMovieById(movie.id))}
-//                 />
-//               ))}
-//             </tbody>
-//           </table>
-//         ) : (
-//           <p>No movies found</p>
-//         )
-//       )}
-
-//       {showAddModal && (
-//         <Modal onClose={() => setShowAddModal(false)}>
-//           <AddMovie closeModal={() => setShowAddModal(false)} />
-//         </Modal>
-//       )}
-
-//       {selectedMovie && (
-//         <Modal onClose={() => dispatch(clearSelectedMovie())}>
-//           <h2>{selectedMovie.title}</h2>
-//           <p><strong>ID:</strong> {selectedMovie.id}</p>
-//           <p><strong>Year:</strong> {selectedMovie.year}</p>
-//           <p><strong>Format:</strong> {selectedMovie.format}</p>
-//           <p><strong>Actors:</strong> {selectedMovie.actors?.join(", ") || "—"}</p>
-//         </Modal>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default DisplayMovie;
-
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import MovieItem from "./MovieItem";
 import AddMovie from "./AddMovie";
 import SearchBar from "./UI/SearchBar";
+import ImportMovies from "./ImportMovie";
 import Modal from "./UI/Modal";
 
-import {
-  fetchMovies,
-  fetchMovieById,
-} from "../redux/movieThunk";
+import { fetchMovies, fetchMovieById } from "../redux/movieThunk";
 import { clearSelectedMovie } from "../redux/moviesSlice";
 
 const DisplayMovie = () => {
   const dispatch = useDispatch();
-  const { items: movies, isLoading, error, selectedMovie } = useSelector(
-    (state) => state.movies
-  );
+  const {
+    items: movies,
+    isLoading,
+    error,
+    selectedMovie,
+  } = useSelector((state) => state.movies);
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -126,56 +27,59 @@ const DisplayMovie = () => {
 
   const filteredMovies = movies.filter((movie) => {
     const query = searchQuery.toLowerCase();
-    return (
-      movie.title.toLowerCase().includes(query) ||
-      movie.actors?.some((actor) => actor.toLowerCase().includes(query))
-    );
+    return movie.title.toLowerCase().includes(query);
   });
 
   return (
     <div className="container my-4">
-      <h2>Movies</h2>
+      <h2 className="mb-4">Movies</h2>
 
-      <div className="d-flex align-items-center mb-3">
+      <div className="d-flex flex-wrap gap-2 align-items-center mb-4">
         <SearchBar value={searchQuery} onChange={setSearchQuery} />
+
         <button
           onClick={() => setShowAddModal(true)}
-          className="btn btn-success ms-3"
+          className="btn btn-success"
         >
           Add Movie
         </button>
+
+        <ImportMovies />
       </div>
 
       {isLoading && <p>Loading...</p>}
       {error && <p className="text-danger">{error}</p>}
 
-      {!isLoading && !error && (
-        filteredMovies.length > 0 ? (
-          <table className="table table-striped table-hover">
-            <thead className="table-dark">
-              <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Year</th>
-                <th>Format</th>
-                <th>Actors</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredMovies.map((m) => (
-                <MovieItem
-                  key={m.id || `${m.title}-${m.year}`}
-                  movie={m}
-                  onView={(movie) => dispatch(fetchMovieById(movie.id))}
-                />
-              ))}
-            </tbody>
-          </table>
+      {!isLoading &&
+        !error &&
+        (filteredMovies.length > 0 ? (
+          <div className="table-responsive">
+            <table
+              className="table table-striped table-hover w-auto"
+              style={{ minWidth: "600px", maxWidth: "900px", margin: "0 auto" }}
+            >
+              <thead className="table-dark">
+                <tr>
+                  <th>Title</th>
+                  <th>Year</th>
+                  <th>Format</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredMovies.map((m) => (
+                  <MovieItem
+                    key={m.id}
+                    movie={m}
+                    onView={(movie) => dispatch(fetchMovieById(movie.id))}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : (
           <p>No movies found</p>
-        )
-      )}
+        ))}
 
       {showAddModal && (
         <Modal onClose={() => setShowAddModal(false)}>
@@ -196,8 +100,7 @@ const DisplayMovie = () => {
             <strong>Format:</strong> {selectedMovie.format}
           </p>
           <p>
-            <strong>Actors:</strong>{" "}
-            {selectedMovie.actors?.join(", ") || "—"}
+            <strong>Actors:</strong> {selectedMovie.actors?.join(", ") || "—"}
           </p>
         </Modal>
       )}
