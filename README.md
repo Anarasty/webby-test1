@@ -30,7 +30,7 @@
 Перед запуском програми, необхідно перевірити наявність файлу .env в корені поекту.
 
 # Архітектура проекту
-![Текст описания](https://www.example.com/image.jpg)
+![Arch](https://raw.githubusercontent.com/Anarasty/webby-test1/refs/heads/master/architecture1.jpg)
 
 # Структура програми
 ```
