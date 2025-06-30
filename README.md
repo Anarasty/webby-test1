@@ -26,6 +26,14 @@
 Текстовий файл зі списком фільмів для завантаження доступний за посиланням - https://gist.github.com/k0stik/3028d42973544dd61c3b4ad863378cad
 
 # Інструкція по запуску
+Docker need to be installed
+
+Download instance: 
+`docker pull nika16minaieva/react-movies`
+
+Starting instance: 
+`docker run --name react-movies -p 3000:3000 -e REACT_APP_API_URL=http://localhost:8000/api/v1 nika16minaieva/react-movies`
+
 ## ВАЖЛИВО
 Перед запуском програми, необхідно перевірити наявність файлу .env в корені поекту.
 
