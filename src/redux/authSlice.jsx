@@ -1,9 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { USERS_API, SESSIONS_API } from "../api_const";
 
-// const USERS_API_URL = process.env.REACT_APP_USERS_API;
-// const SESSIONS_API_URL = process.env.REACT_APP_SESSIONS_API;
-
 export const registerUser = createAsyncThunk(
   "auth/register",
   async (data, thunkAPI) => {

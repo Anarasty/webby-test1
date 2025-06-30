@@ -1,14 +1,10 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import {MOVIES_API_SORTED, MOVIES_API, IMPORT_API} from '../api_const'
 
-// const MOVIES_API_URL = process.env.REACT_APP_MOVIES_API;
-
 export const fetchMovies = createAsyncThunk(
   "movies/fetchMovies",
   async (_, thunkAPI) => {
     const token = thunkAPI.getState().auth.token;
-    // const res = await fetch("http://localhost:8000/api/v1/movies?limit=500", {
-    // console.log("MOVIES_API_URL:", MOVIES_API_URL);
     const res = await fetch(
       `${MOVIES_API_SORTED}`,
       {
@@ -80,7 +76,7 @@ export const importMovies = createAsyncThunk(
     async (file, thunkAPI) => {
       const token = thunkAPI.getState().auth.token;
       const formData = new FormData();
-      formData.append("movies", file, file.name); // 👈 ИСПРАВЬ КЛЮЧ
+      formData.append("movies", file, file.name);
   
       const res = await fetch(`${IMPORT_API}`, {
         method: "POST",

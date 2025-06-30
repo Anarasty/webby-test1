@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import MovieItem from "./MovieItem";
 import AddMovie from "./AddMovie";
-import SearchBar from "./UI/SearchBar";
 import ImportMovies from "./ImportMovie";
 import Modal from "./UI/Modal";
+import SearchBlock from "../components/Search/SearchBlock";
 
 import { fetchMovies, fetchMovieById } from "../redux/movieThunk";
 import { clearSelectedMovie } from "../redux/moviesSlice";
@@ -19,31 +19,24 @@ const DisplayMovie = () => {
   } = useSelector((state) => state.movies);
 
   const [showAddModal, setShowAddModal] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     dispatch(fetchMovies());
   }, [dispatch]);
 
-  const filteredMovies = movies.filter((movie) => {
-    const query = searchQuery.toLowerCase();
-    return movie.title.toLowerCase().includes(query);
-  });
-
   return (
     <div className="container my-4">
-      <h2 className="mb-4">Movies</h2>
+      <h2 className="mb-4 text-center">Movies</h2>
 
-      <div className="d-flex flex-wrap gap-2 align-items-center mb-4">
-        <SearchBar value={searchQuery} onChange={setSearchQuery} />
+      <SearchBlock />
 
+      <div className="d-flex justify-content-center gap-2 my-4 flex-wrap">
         <button
           onClick={() => setShowAddModal(true)}
           className="btn btn-success"
         >
           Add Movie
         </button>
-
         <ImportMovies />
       </div>
 
@@ -52,11 +45,11 @@ const DisplayMovie = () => {
 
       {!isLoading &&
         !error &&
-        (filteredMovies.length > 0 ? (
+        (movies.length > 0 ? (
           <div className="table-responsive">
             <table
-              className="table table-striped table-hover w-auto"
-              style={{ minWidth: "600px", maxWidth: "900px", margin: "0 auto" }}
+              className="table table-striped table-hover mx-auto"
+              style={{ minWidth: "600px", maxWidth: "900px" }}
             >
               <thead className="table-dark">
                 <tr>
@@ -67,11 +60,11 @@ const DisplayMovie = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredMovies.map((m) => (
+                {movies.map((m) => (
                   <MovieItem
                     key={m.id}
                     movie={m}
-                    onView={(movie) => dispatch(fetchMovieById(movie.id))}
+                    onView={() => dispatch(fetchMovieById(m.id))}
                   />
                 ))}
               </tbody>
