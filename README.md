@@ -35,7 +35,7 @@ Starting instance:
 `docker run --name react-movies -p 3000:3000 -e REACT_APP_API_URL=http://localhost:8000/api/v1 nika16minaieva/react-movies`
 
 ## ВАЖЛИВО
-Перед запуском програми, необхідно перевірити наявність файлу .env в корені поекту.
+Важливо запускати все в режимі інкогніто в браузері, бо можуть виникати конфлікти між деякими кукі та кешами
 
 # Архітектура проекту
 ![Arch](https://raw.githubusercontent.com/Anarasty/webby-test1/refs/heads/master/architecture1.jpg)
