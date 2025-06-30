@@ -30,7 +30,7 @@
 Перед запуском програми, необхідно перевірити наявність файлу .env в корені поекту.
 
 # Архітектура програми
-`
+```
 src {
     components {
         Search {
@@ -66,4 +66,4 @@ Dockerfile
 package-lock.json
 package.json
 README.md
-`
+```
